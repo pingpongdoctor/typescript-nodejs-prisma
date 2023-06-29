@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//USER PROFILE MODEL
+model UserProfile {
+  id        Int              @id @default(autoincrement())
+  username  String
+  password  String
+  createdAt DateTime         @default(now())
+  userInfor UserGeneralInfo?
+}
+
+model Mentor {
+  id               Int               @id @default(autoincrement())
+  name             String
+  age              Int
+  createdAt        DateTime          @default(now())
+  userGeneralInfor UserGeneralInfo[]
+}
+
+model Todo {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
+model Teacher {
+  id              Int               @id @default(autoincrement())
+  name            String
+  like            Int
+  createdAt       DateTime          @default(now())
+  userGeneralInfo UserGeneralInfo[] @relation("TeacherToUserGeneralInfo")
+}
+
+model UserGeneralInfo {
+  id        Int         @id @default(autoincrement())
+  age       Int
+  birthday  DateTime
+  email     String?
+  createdAt DateTime    @default(now())
+  profileId Int         @unique
+  mentorId  Int?
+  mentor    Mentor?     @relation(fields: [mentorId], references: [id])
+  profile   UserProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  teacher   Teacher[]   @relation("TeacherToUserGeneralInfo")
+}
